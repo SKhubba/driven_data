@@ -20,6 +20,7 @@ sys.stdout = open(os.devnull, 'w')
 # data directory
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'data')
 
+# dictionaries created for simplicity in managing file paths
 household_paths = {'A': {'train': os.path.join(DATA_DIR, 'A_hhold_train.csv'),
                          'test': os.path.join(DATA_DIR, 'A_hhold_test.csv')},
 
@@ -27,7 +28,7 @@ household_paths = {'A': {'train': os.path.join(DATA_DIR, 'A_hhold_train.csv'),
                          'test': os.path.join(DATA_DIR, 'B_hhold_test.csv')},
 
                    'C': {'train': os.path.join(DATA_DIR, 'C_hhold_train.csv'),
-                         'test': os.path.join(DATA_DIR, 'C', 'C_hhold_test.csv')}}
+                         'test': os.path.join(DATA_DIR, 'C_hhold_test.csv')}}
 
 
 individual_paths = {'A': {'train': os.path.join(DATA_DIR, 'A_indiv_train.csv'),
@@ -39,13 +40,23 @@ individual_paths = {'A': {'train': os.path.join(DATA_DIR, 'A_indiv_train.csv'),
                     'C': {'train': os.path.join(DATA_DIR, 'C_indiv_train.csv'),
                           'test': os.path.join(DATA_DIR, 'C_indiv_test.csv')}}
 
+# read data in
 a_h_train = pd.read_csv(household_paths['A']['train'], index_col='id')
 b_h_train = pd.read_csv(household_paths['B']['train'], index_col='id')
 c_h_train = pd.read_csv(household_paths['C']['train'], index_col='id')
 
-a_i_train = pd.read_csv(individual_paths['A']['train'], index_col='id')
-b_i_train = pd.read_csv(individual_paths['B']['train'], index_col='id')
-c_i_train = pd.read_csv(individual_paths['C']['train'], index_col='id')
+a_i_train = pd.read_csv(individual_paths['A']['train'], index_col=['id', 'iid'])
+b_i_train = pd.read_csv(individual_paths['B']['train'], index_col=['id', 'iid'])
+c_i_train = pd.read_csv(individual_paths['C']['train'], index_col=['id', 'iid'])
+
+# read test data in
+a_h_test = pd.read_csv(household_paths['A']['test'], index_col='id')
+b_h_test = pd.read_csv(household_paths['B']['test'], index_col='id')
+c_h_test = pd.read_csv(household_paths['C']['test'], index_col='id')
+
+a_i_test = pd.read_csv(individual_paths['A']['test'], index_col=['id', 'iid'])
+b_i_test = pd.read_csv(individual_paths['B']['test'], index_col=['id', 'iid'])
+c_i_test = pd.read_csv(individual_paths['C']['test'], index_col=['id', 'iid'])
 
 def standardize(df, numeric_only=True):
     # detect columns that are numeric
@@ -82,7 +93,7 @@ def pre_process_data(df, enforce_cols=None):
     return df
 
 aX_h_train = pre_process_data(a_h_train.drop('poor', axis=1))
-ay_train = np.ravel(a_h_train.poor)
+ay_h_train = np.ravel(a_h_train.poor)
 
 bX_h_train = pre_process_data(b_h_train.drop('poor', axis=1))
 by_h_train = np.ravel(b_h_train.poor)
@@ -90,14 +101,14 @@ by_h_train = np.ravel(b_h_train.poor)
 cX_h_train = pre_process_data(c_h_train.drop('poor', axis=1))
 cy_h_train = np.ravel(c_h_train.poor)
 
-aX_i_train = pre_process_data(a_h_train.drop('poor', axis=1))
-ay_i_train = np.ravel(a_h_train.poor)
+aX_i_train = pre_process_data(a_i_train.drop('poor', axis=1))
+ay_i_train = np.ravel(a_i_train.poor)
 
-bX_i_train = pre_process_data(b_h_train.drop('poor', axis=1))
-by_i_train = np.ravel(b_h_train.poor)
+bX_i_train = pre_process_data(b_i_train.drop('poor', axis=1))
+by_i_train = np.ravel(b_i_train.poor)
 
-cX_i_htrain = pre_process_data(c_h_train.drop('poor', axis=1))
-cy_i_train = np.ravel(c_h_train.poor)
+cX_i_train = pre_process_data(c_i_train.drop('poor', axis=1))
+cy_i_train = np.ravel(c_i_train.poor)
 
 if __name__ == "__main__":
     sys.stdout = sys.__stdout__
