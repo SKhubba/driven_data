@@ -13,9 +13,10 @@ import os
 import numpy as np
 import pandas as pd
 import sys
+from statsmodels.imputation import mice
 
 # suppress printing
-sys.stdout = open(os.devnull, 'w')
+#sys.stdout = open(os.devnull, 'w')
 
 # data directory
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'data')
@@ -88,9 +89,30 @@ def pre_process_data(df, enforce_cols=None):
         df.drop(to_drop, axis=1, inplace=True)
         df = df.assign(**{c: 0 for c in to_add})
 
-    df.fillna(0, inplace=True)
+    #df.fillna(0, inplace=True)
 
     return df
+
+def impute(df, perturbation_method='gaussian', k_pmm=20, history_callback=None):
+    # wrapper for impute to preserve index
+    imputed_df = mice.MICEData(df.reset_index(), perturbation_method, k_pmm, history_callback).data
+    imputed_df.set_index('id', inplace=True)
+    return imputed_df
+
+
+def make_country_sub(preds, test_feat, country):
+    # make sure we code the country correctly
+    country_codes = ['A', 'B', 'C']
+
+    # get just the poor probabilities
+    country_sub = pd.DataFrame(data=preds[:, 1],  # proba p=1
+                               columns=['poor'],
+                               index=test_feat.index)
+
+    # add the country code for joining later
+    country_sub["country"] = country
+    return country_sub[["country", "poor"]]
+
 
 aX_h_train = pre_process_data(a_h_train.drop('poor', axis=1))
 ay_h_train = np.ravel(a_h_train.poor)
@@ -110,5 +132,10 @@ by_i_train = np.ravel(b_i_train.poor)
 cX_i_train = pre_process_data(c_i_train.drop('poor', axis=1))
 cy_i_train = np.ravel(c_i_train.poor)
 
-if __name__ == "__main__":
-    sys.stdout = sys.__stdout__
+a_h_test = pre_process_data(a_h_test, enforce_cols=aX_h_train.columns)
+b_h_test = pre_process_data(b_h_test, enforce_cols=bX_h_train.columns)
+c_h_test = pre_process_data(c_h_test, enforce_cols=cX_h_train.columns)
+
+a_i_test = pre_process_data(a_i_test, enforce_cols=aX_i_train.columns)
+b_i_test = pre_process_data(b_i_test, enforce_cols=bX_i_train.columns)
+c_i_test = pre_process_data(c_i_test, enforce_cols=cX_i_train.columns)
