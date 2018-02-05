@@ -15,7 +15,7 @@ import pandas as pd
 import sys
 
 # suppress printing
-sys.stdout = open(os.devnull, 'w')
+#sys.stdout = open(os.devnull, 'w')
 
 # data directory
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__name__)), 'data')
@@ -110,5 +110,10 @@ by_i_train = np.ravel(b_i_train.poor)
 cX_i_train = pre_process_data(c_i_train.drop('poor', axis=1))
 cy_i_train = np.ravel(c_i_train.poor)
 
-if __name__ == "__main__":
-    sys.stdout = sys.__stdout__
+a_h_test = pre_process_data(a_h_test, enforce_cols=aX_h_train.columns)
+b_h_test = pre_process_data(b_h_test, enforce_cols=bX_h_train.columns)
+c_h_test = pre_process_data(c_h_test, enforce_cols=cX_h_train.columns)
+
+a_i_test = pre_process_data(a_i_test, enforce_cols=aX_i_train.columns)
+b_i_test = pre_process_data(b_i_test, enforce_cols=bX_i_train.columns)
+c_i_test = pre_process_data(c_i_test, enforce_cols=cX_i_train.columns)
