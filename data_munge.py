@@ -88,7 +88,7 @@ def pre_process_data(df, enforce_cols=None):
         df.drop(to_drop, axis=1, inplace=True)
         df = df.assign(**{c: 0 for c in to_add})
 
-    df.fillna(0, inplace=True)
+    #df.fillna(0, inplace=True)
 
     return df
 
