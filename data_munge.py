@@ -93,10 +93,15 @@ def pre_process_data(df, enforce_cols=None):
 
     return df
 
-def impute(df, perturbation_method='gaussian', k_pmm=20, history_callback=None):
+def impute(df, type='household', perturbation_method='gaussian', k_pmm=20, history_callback=None):
     # wrapper for impute to preserve index
-    imputed_df = mice.MICEData(df.reset_index(), perturbation_method, k_pmm, history_callback).data
-    imputed_df.set_index('id', inplace=True)
+
+    if type is 'household':
+        index = df.index
+
+    imputed_df = mice.MICEData(df, perturbation_method, k_pmm, history_callback).data
+
+    imputed_df.set_index(index, inplace=True)
     return imputed_df
 
 
