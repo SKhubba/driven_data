@@ -13,6 +13,7 @@ import os
 import numpy as np
 import pandas as pd
 import sys
+from statsmodels.imputation import mice
 
 # suppress printing
 #sys.stdout = open(os.devnull, 'w')
@@ -91,6 +92,12 @@ def pre_process_data(df, enforce_cols=None):
     #df.fillna(0, inplace=True)
 
     return df
+
+def impute(df, perturbation_method='gaussian', k_pmm=20, history_callback=None):
+    # wrapper for impute to preserve index
+    imputed_df = mice.MICEData(df.reset_index(), perturbation_method, k_pmm, history_callback).data
+    imputed_df.set_index('id', inplace=True)
+    return imputed_df
 
 
 def make_country_sub(preds, test_feat, country):
