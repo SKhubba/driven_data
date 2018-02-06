@@ -10,7 +10,7 @@ class benchmark():
         self.X = X
         self.y = y
 
-        self.log_loss_scorer = make_scorer(log_loss, greater_is_better=False, needs_proba=True)
+        self.log_loss_scorer = make_scorer(log_loss, needs_proba=True)
 
     def score(self):
         self.score = cross_val_score(self.model, self.X, self.y, scoring=self.log_loss_scorer,n_jobs=-1)
