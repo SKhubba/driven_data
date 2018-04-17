@@ -12,5 +12,7 @@ The goal is binary classification on a high dimensional, obfuscated dataset.
 File Descriptions:
 
 EDA: an exploratory data analysis of the dataset
+
 data_munge: pre-processing, imputation, error-correction
+
 final_model: some additional minor cleanup, feature creation, model training
